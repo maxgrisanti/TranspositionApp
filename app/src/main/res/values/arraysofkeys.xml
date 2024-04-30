@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="key_instruments">
+        <item>Bb</item>
+        <item>C</item>
+        <item>F</item>
+        <item>Eb</item>
+    </string-array>
+    <string-array name="Notes">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F</item>
+        <item>G</item>
+
+    </string-array>
+    <string-array name="SNF">
+        <item>Sharp</item>
+        <item>Natural</item>
+        <item>Flat</item>
+
+    </string-array>
+</resources>

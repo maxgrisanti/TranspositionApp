@@ -1,6 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/editTextNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Note" />
+
+    <Spinner
+        android:id="@+id/spinnerNote"
+        android:layout_width="141dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="16dp"
+        android:entries="@array/Notes"
+        android:spinnerMode="dialog"
+
+        />
+        <!--android:prompt="Select"-->
+    <!--Revisit  prompmt-->
+
+
+
+
+    <Spinner
+        android:id="@+id/spinnerSNF"
+        android:layout_width="141dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="16dp"
+        android:entries="@array/key_instruments"
+         />
+
+    <Spinner
+        android:id="@+id/spinnerFrom"
+        android:layout_width="141dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="16dp"
+        android:entries="@array/key_instruments"
+         />
+
+    <Spinner
+        android:id="@+id/spinnerTo"
+        android:layout_width="141dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="16dp"
+        android:entries="@array/key_instruments"
+         />
+
+    <Button
+        android:id="@+id/buttonTranspose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Transpose" />
+
+    <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Transposed Note:"
+        android:textStyle="bold" />
 
 </LinearLayout>

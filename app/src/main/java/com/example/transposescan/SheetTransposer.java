@@ -1,3 +1,6 @@
+package com.example.transposescan;
+
+import com.example.transposescan.EditNotes;
 
 public class SheetTransposer {
 

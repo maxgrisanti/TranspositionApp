@@ -1,3 +1,5 @@
+package com.example.transposescan;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -151,7 +153,7 @@ public class EditNotes {
     }
 
     /*
-     * Updates the value of each note according to the transposed NotesArray from the file
+     * Updates the value of each note according to the transposed com.example.transposescan.NotesArray from the file
      * If the original sheet contains an accidental, the accidental value is also updated according the new note
      * An accidental will always be  outside of the key signature, so it will either be flat, sharp, or natural in the tranposed sheet
      */
