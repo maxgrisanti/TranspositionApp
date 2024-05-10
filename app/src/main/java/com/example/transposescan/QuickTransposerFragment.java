@@ -1,22 +1,15 @@
 package com.example.transposescan;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
-import com.example.transposescan.R;
-
-import java.util.ArrayList;
-
-public class quickTransposer extends AppCompatActivity {
+public class QuickTransposerFragment extends AppCompatActivity {
 
 
     private Spinner spinnerNote;
@@ -41,6 +34,9 @@ public class quickTransposer extends AppCompatActivity {
 
         // Set click listener for the button
         buttonTranspose.setOnClickListener(this::transposeN);
+
+        Button switchBackButton = findViewById(R.id.switchBackButton);
+
     }
 
     public void transposeN(View v) {

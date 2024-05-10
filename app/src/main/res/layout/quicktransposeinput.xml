@@ -19,7 +19,14 @@
         android:spinnerMode="dialog"
 
         />
-        <!--android:prompt="Select"-->
+
+    <Button
+        android:id="@+id/switchBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Switch Back to MainActivity" />
+
+    <!--android:prompt="Select"-->
     <!--Revisit  prompmt-->
 
 

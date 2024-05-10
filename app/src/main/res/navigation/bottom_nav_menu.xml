@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- bottom_nav_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_main"
+        android:icon="@drawable/ic_home"
+        android:title="Main" />
+    <item
+        android:id="@+id/navigation_quick_transposer"
+        android:icon="@drawable/ic_transposer"
+        android:title="Quick Transposer" />
+</menu>
