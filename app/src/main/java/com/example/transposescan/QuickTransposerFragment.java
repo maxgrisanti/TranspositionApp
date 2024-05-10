@@ -9,8 +9,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class QuickTransposerFragment extends AppCompatActivity {
+import com.example.transposescan.MainActivity;
+import com.example.transposescan.R;
+import com.example.transposescan.Transpose;
 
+public class QuickTransposerFragment extends AppCompatActivity {
 
     private Spinner spinnerNote;
     private Spinner spinnerFrom;
@@ -37,6 +40,15 @@ public class QuickTransposerFragment extends AppCompatActivity {
 
         Button switchBackButton = findViewById(R.id.switchBackButton);
 
+        // Set click listener for the switchBackButton
+        switchBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to MainActivity
+                Intent intent = new Intent(QuickTransposerFragment.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void transposeN(View v) {

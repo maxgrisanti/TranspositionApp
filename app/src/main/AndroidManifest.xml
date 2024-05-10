@@ -24,4 +24,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.example.transposescan.QuickTransposerFragment"
+            android:exported="true">
+
+        </activity>
+
     </application> </manifest>

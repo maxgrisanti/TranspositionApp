@@ -1,12 +1,12 @@
 package com.example.transposescan;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -54,6 +54,17 @@ public class MainActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
+
+        // Find the switch button and set its OnClickListener
+        View switchButton = findViewById(R.id.switchButton);
+        switchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to QuickTransposeFragment
+                Intent intent = new Intent(MainActivity.this, QuickTransposerFragment.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private boolean allPermissionsGranted() {
