@@ -27,17 +27,17 @@ public class QuickTransposerFragment extends AppCompatActivity {
         setContentView(R.layout.quicktransposeinput);
         System.out.println("monkey");
 
+        // Initialize views
         spinnerNote = findViewById(R.id.spinnerNote);
         spinnerFrom = findViewById(R.id.spinnerFrom);
         spinnerTo = findViewById(R.id.spinnerTo);
         buttonTranspose = findViewById(R.id.buttonTranspose);
         textViewResult = findViewById(R.id.textViewResult);
 
-        // Populate the spinners with some dummy data
-
-        // Set click listener for the button
+        // Set click listener for the transpose button
         buttonTranspose.setOnClickListener(this::transposeN);
 
+        // Find the switch back button
         Button switchBackButton = findViewById(R.id.switchBackButton);
 
         // Set click listener for the switchBackButton
@@ -51,19 +51,22 @@ public class QuickTransposerFragment extends AppCompatActivity {
         });
     }
 
+    // Method to handle transpose button click
     public void transposeN(View v) {
         System.out.println("transposedNote");
+
         // Get the selected values from spinners
         String fromKey = spinnerFrom.getSelectedItem().toString();
         String toKey = spinnerTo.getSelectedItem().toString();
         String note = spinnerNote.getSelectedItem().toString();
 
-        // Create an instance of com.example.transposescan.Transpose class with selected keys
+        // Create an instance of Transpose class with selected keys
         Transpose transpose = new Transpose(fromKey, toKey);
 
-        // com.example.transposescan.Transpose the note
+        // Transpose the note
         String transposedNote = transpose.transposeNote(note);
         System.out.println(transposedNote);
+
         // Display the transposed note
         textViewResult.setText("Transposed Note: " + transposedNote);
         System.out.println(transposedNote);
