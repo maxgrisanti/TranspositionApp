@@ -1,152 +1,168 @@
 package com.example.transposescan;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Surface;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.transposescan.databinding.ActivityMainBinding;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.File;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
-    private Executor executor = Executors.newSingleThreadExecutor();
+    private String imageDirectory = "";
 
+    PreviewView previewView;
+
+    Button bTakePicture;
     private ImageCapture imageCapture;
-    private Preview preview;
-    private Camera camera;
-
-    private ActivityMainBinding binding;
-
-    private static final int REQUEST_CODE_PERMISSIONS = 101;
-    private static final String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.CAMERA};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-
-        if (allPermissionsGranted()) {
-            startCamera();
-        } else {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+        // Check and request camera permissions if needed
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
         }
 
-        // Find the switch button and set its OnClickListener
-        View switchButton = findViewById(R.id.switchButton);
-        switchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to QuickTransposeFragment
-                Intent intent = new Intent(MainActivity.this, QuickTransposerFragment.class);
-                startActivity(intent);
-            }
-        });
-    }
+        bTakePicture = findViewById(R.id.bCapture);
+        previewView = findViewById(R.id.previewView);
 
-    private boolean allPermissionsGranted() {
-        for (String permission : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
-    }
+        bTakePicture.setOnClickListener(this);
 
-    private void startCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                bindPreview(cameraProvider);
+                startCameraX(cameraProvider);
             } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
+                Log.e("CameraX", "Error initializing camera provider", e);
             }
+
         }, ContextCompat.getMainExecutor(this));
-    }
-
-    private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
-        preview = new Preview.Builder().build();
-
-        CameraSelector cameraSelector = new CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build();
-
-        cameraProvider.unbindAll();
-
-        camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview);
-
-        preview.setSurfaceProvider(binding.previewView.getSurfaceProvider());
-
-        imageCapture = new ImageCapture.Builder()
-                .setTargetRotation(Surface.ROTATION_0)
-                .build();
-
-        binding.bCapture.setOnClickListener(v -> captureImage());
-    }
-
-    private void captureImage() {
-        File photoFile = new File(getBatchDirectoryName(), System.currentTimeMillis() + ".jpg");
-        ImageCapture.OutputFileOptions outputFileOptions =
-                new ImageCapture.OutputFileOptions.Builder(photoFile).build();
-
-        imageCapture.takePicture(outputFileOptions, executor, new ImageCapture.OnImageSavedCallback() {
-            @Override
-            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                runOnUiThread(() ->
-                        Toast.makeText(MainActivity.this, "Image saved successfully", Toast.LENGTH_SHORT).show());
-            }
-
-            @Override
-            public void onError(@NonNull ImageCaptureException exception) {
-                runOnUiThread(() ->
-                        Toast.makeText(MainActivity.this, "Error saving image: " + exception.getMessage(), Toast.LENGTH_SHORT).show());
-            }
-        });
-    }
-
-    private String getBatchDirectoryName() {
-        String app_folder_path = getFilesDir().toString() + "/images";
-        File dir = new File(app_folder_path);
-        if (!dir.exists() && !dir.mkdirs()) {
-            Log.e("Capture Image", "Cannot create directory to save image");
-        }
-        return app_folder_path;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                startCamera();
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Camera permission granted, proceed with initialization
+                cameraProviderFuture.addListener(() -> {
+                    try {
+                        ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                        startCameraX(cameraProvider);
+                    } catch (ExecutionException | InterruptedException e) {
+                        Log.e("CameraX", "Error initializing camera provider", e);
+                    }
+                }, ContextCompat.getMainExecutor(this));
             } else {
-                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
-                finish();
+                // Camera permission denied, handle accordingly (e.g., show message or disable camera functionality)
+                Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
+    private void startCameraX(ProcessCameraProvider cameraProvider) {
+        cameraProvider.unbindAll();
+
+        CameraSelector cameraSelector = new CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build();
+
+        Preview preview = new Preview.Builder().build();
+
+        preview.setSurfaceProvider(previewView.getSurfaceProvider());
+
+        imageCapture = new ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .build();
+
+        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.bCapture) {
+            capturePhoto();
+        } else if (view.getId() == R.id.switchButton) {
+            Intent intent = new Intent(this, QuickTransposerFragment.class);
+            startActivity(intent);
+        }
+    }
+
+    private void capturePhoto() {
+        long timeStamp = System.currentTimeMillis();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timeStamp);
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+
+        imageCapture.takePicture(
+                new ImageCapture.OutputFileOptions.Builder(
+                        getContentResolver(),
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        contentValues
+                ).build(),
+                ContextCompat.getMainExecutor(this),
+                new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        Toast.makeText(MainActivity.this, "Saving...", Toast.LENGTH_SHORT).show();
+                        getImageDirectory();
+                    }
+
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        Toast.makeText(MainActivity.this, "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+    private void getImageDirectory() {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                null, null);
+        int column_index_data = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToLast();
+
+        //THIS IS WHAT YOU WANT!
+        imageDirectory = cursor.getString(column_index_data);
+
+
+        if (imageDirectory.equals((MediaStore.Images.Media.EXTERNAL_CONTENT_URI) + "/" + MediaStore.MediaColumns.DISPLAY_NAME)) {
+            //Log.d("Directory of Image", imageDirectory);
+            Toast.makeText(MainActivity.this,"Successfully assigned directory to file: " + imageDirectory,Toast.LENGTH_SHORT).show();
+        }
+
+        Log.e("image directory", imageDirectory);
+    }
+
+    public String getDirectory() {
+        return imageDirectory;
+    }
+
 }
