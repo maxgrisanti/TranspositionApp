@@ -1,6 +1,7 @@
 package com.example.transposescan;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,8 +9,12 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button switchviews;
 
     private TextView pathview;
+
+    public String transposeTo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             capturePhoto();
             String path = getDirectory();
             pathview.setText(path);
+            showPopup();
 
 
 
@@ -186,6 +194,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public String getDirectory() {
         return imageDirectory;
+    }
+
+
+    private void showPopup() {
+        // Create a dialog builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Inflate the dialog layout
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_spinner, null);
+        builder.setView(dialogView);
+
+        // Set up the spinner
+        Spinner spinner = dialogView.findViewById(R.id.spinner_letters);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.key_instruments, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        // Create the dialog
+        AlertDialog alertDialog = builder.create();
+
+        // Set up the submit button
+        Button submitButton = dialogView.findViewById(R.id.btn_submit);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Assign the selected value to transposeTo
+                transposeTo = spinner.getSelectedItem().toString();
+
+                // Close the dialog
+                alertDialog.dismiss();
+            }
+        });
+
+        // Show the dialog
+        alertDialog.show();
+    }
+
+    public String getTransposeTo() {
+        return transposeTo;
     }
 
 }
