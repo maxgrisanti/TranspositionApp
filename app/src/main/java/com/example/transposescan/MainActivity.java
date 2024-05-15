@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Button switchviews;
 
+    private TextView pathview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bTakePicture = findViewById(R.id.bCapture);
         previewView = findViewById(R.id.previewView);
         switchviews = findViewById(R.id.switchButton);
+        pathview = findViewById(R.id.imagepath);
 
 
         bTakePicture.setOnClickListener(this);
@@ -121,6 +125,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         if (view.getId() == R.id.bCapture) {
             capturePhoto();
+            String path = getDirectory();
+            pathview.setText(path);
+
+
+
         }
         if (view.getId() == R.id.switchButton) {
             Intent intent = new Intent(this, QuickTransposerFragment.class);
